@@ -1,6 +1,7 @@
 import os # use utitlies in os.path
-from filedb import *
+from filedb import FILE_MD5
 from md5file import md5file
+from settings import __verbose
 
 #use a queue data structure instead of list
 class _Node(object):
@@ -45,7 +46,7 @@ class Queue(object):
             self._tail = self._tail._next
 
 # do breath first search of the directory tree
-def scan(dir_init, db_init=None)
+def scan(dir_init, db_init = None):
     duplicated = [] # list of duplicated files
     filedb = {}
     if type(db_init) == dict:
@@ -59,12 +60,17 @@ def scan(dir_init, db_init=None)
          dir_listing = os.listdir(top)
          for name in dir_listing:
             name = os.path.join(top, name)
-            if os.path.isdir(name):
+            if __verbose:
+                print "Scanning ", name
+                
+            if os.path.islink(name): # skip symbolic links
+                pass
+            elif os.path.isdir(name):
                 queue.enque(name)
             elif os.path.isfile(name):
                 size = os.path.getsize(name)
                 ctime= os.path.getctime(name)
-                md5 = md5file(name)
+                md5 = md5file(name, size)
                 if filedb.has_key(size):
                     # if size<64:
                     for file_vec in filedb[size]:

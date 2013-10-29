@@ -5,20 +5,10 @@ Created on Oct 10, 2013
 '''
 # import os,string
 
-class DICT(object):
-    """
-    Data structure for keeping search dirs.
-    """
-    __slots__ = ('_links_hash') # ('_name', '_links_hash')
-    def __init__(self):
-        # self._name = name # root
-        # self._dir_set = set([])
-        self._links_hash = None
-
 class _DirTree(object):
     __slots__ = ('_root', '_root_added')
     def __init__(self):
-        self._root = DICT()
+        self._root = {}
         self._root_added = False
 
     def checked(self, dirname): # return true if already in; else false and add
@@ -37,22 +27,22 @@ class _DirTree(object):
             if not d: # skip empty names
                 continue
 
-            if cur_node._links_hash == None:
-                new_node = DICT()
-                cur_node._links_hash = {d:new_node}
+            if cur_node == None:
+                new_node = {}
+                cur_node = {d:new_node}
                 cur_node = new_node
-            elif cur_node._links_hash.has_key(d):
-                cur_node = cur_node._links_hash[d]
-                if cur_node._links_hash == None:
+            elif cur_node.has_key(d):
+                cur_node = cur_node[d]
+                if cur_node == None:
                     return False
             else:
-                new_node = DICT()
-                cur_node._links_hash[d]=new_node
+                new_node = {}
+                cur_node[d]=new_node
                 cur_node = new_node
 
 
         if new_node == None:
-            cur_node._links_hash=None
+            cur_node=None
             if cur_node == self._root:
                 self._root_added = True
 
@@ -74,22 +64,22 @@ class _DirTree(object):
             if not d: # skip empty names
                 continue
 
-            if cur_node._links_hash == None:
-                new_node = DICT()
-                cur_node._links_hash = {d:new_node}
+            if cur_node == None:
+                new_node = {}
+                cur_node = {d:new_node}
                 cur_node = new_node
-            elif cur_node._links_hash.has_key(d):
-                cur_node = cur_node._links_hash[d]
-                if cur_node._links_hash == None:
+            elif cur_node.has_key(d):
+                cur_node = cur_node[d]
+                if cur_node == None:
                     return False
             else:
-                new_node = DICT()
-                cur_node._links_hash[d]=new_node
+                new_node = {}
+                cur_node[d]=new_node
                 cur_node = new_node
 
 
         if new_node == None:
-            cur_node._links_hash=None
+            cur_node=None
             if cur_node == self._root:
                 self._root_added = True
 

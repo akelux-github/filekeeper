@@ -1,5 +1,5 @@
 import os # use utitlies in os.path
-from filedb import FILE_MD5
+from filedb import FILE_MD5,FILE_NAME
 from md5file import md5file
 from settings import __verbose
 
@@ -89,12 +89,15 @@ def scan(dir_init, db_init = None):
     while queue.not_empty():
         top = queue.deque()
         dir_listing = os.listdir(top)
+        dir_checked = False
         for name in dir_listing:
+            if dir_checked:
+                break
             name = os.path.join(top, name)
             # if name == '/Users/Rong/ProjectLocker/testsrc
             if __verbose:
                 print "Scanning ", name
-            
+
             if os.path.islink(name): # skip symbolic links
                 pass
             elif os.path.isdir(name):
@@ -104,12 +107,11 @@ def scan(dir_init, db_init = None):
                 ctime= os.path.getctime(name)
                 md5 = md5file(name, size)
                 if filedb.has_key(size):
-                    # if size<64:
-                    for file_vec in filedb[size]:
-                        if md5 == file_vec[FILE_MD5]:
-                            duplicated.append([name, ctime, md5, size])
-                        else:
-                            filedb[size].append([name, ctime, md5])
+                    if filedb[size].has_key(md5):
+                        duplicated.append((name, ctime, md5, size))
+                    else:
+                        filedb[size][md5]=(name, ctime)
                 else:
-                    filedb[size]=[[name, ctime, md5]]
+                    filedb[size]={md5:(name, ctime)} # filedb is a dictionary of dictionary
     return filedb, duplicated
+
